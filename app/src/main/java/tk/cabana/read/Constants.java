@@ -18,5 +18,6 @@ public class Constants {
     public static final String GET_CNBETA_NEWS_URL = "https://cnbeta1.com/api/getArticles";
     public static final String GET_CNBETA_MORE_URL = "https://cnbeta1.com/api/getMoreArticles/";
     public static final String GET_CNBETA_CONTENT_URL = "https://cnbeta1.com/api/getArticleDetail/";
+    public static final String GET_ZHIHU_NEWS_URL = "http://news-at.zhihu.com/api/4/news/latest";
 
 }
