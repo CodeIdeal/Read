@@ -24,10 +24,10 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
+import me.relex.circleindicator.CircleIndicator;
 import tk.cabana.read.Constants;
 import tk.cabana.read.R;
 import tk.cabana.read.Utils;
-import tk.cabana.read.activity.CnbetaDetailActivity;
 import tk.cabana.read.activity.ZhihuDetailActivity;
 import tk.cabana.read.bean.ZhihuBean;
 import tk.cabana.read.custom.HeaderGridView;
@@ -50,9 +50,13 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
     private SwipeRefreshLayout mRootView;
 
     private LinearLayout mZhihuView;
-    private ViewPager mZhihuTop;
     private HeaderGridView mZhihuGridview;
     private RelativeLayout mZhihuLoading;
+
+    private RelativeLayout mZhihuTop;
+    private ViewPager mZhihuTop_ViewPager;
+    private CircleIndicator mZhihuTop_Indicator;
+    private TextView mZhihuTop_Title;
 
     private boolean flag;
     private ZhihuBean mData;
@@ -79,8 +83,14 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
 
         mZhihuView = (LinearLayout) mRootView.findViewById(R.id.zhihu_view);
 //        mZhihuTop = (ViewPager) mRootView.findViewById(R.id.zhihu_top);
-        mZhihuTop = new ViewPager(getContext());
         mZhihuGridview = (HeaderGridView) mRootView.findViewById(R.id.zhihu_gridview);
+        
+        mZhihuTop = (RelativeLayout) View.inflate(getContext(), R.layout.indicatorviewpager, null);
+        mZhihuTop_ViewPager = (ViewPager) mZhihuTop.findViewById(R.id.zhihutop_viewpager);
+        mZhihuTop_Indicator = (CircleIndicator) mZhihuTop.findViewById(R.id.zhihutop_Indicator);
+        mZhihuTop_Title = (TextView) mZhihuTop.findViewById(R.id.zhihutop_title);
+
+        
         mZhihuLoading = (RelativeLayout) mRootView.findViewById(R.id.zhihu_loading);
 
         return mRootView;
@@ -107,7 +117,26 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
                         params.height = Utils.dp2px(getContext(),200);
                         params.width = ViewPager.LayoutParams.MATCH_PARENT;
                         mZhihuTop.setLayoutParams(params);
-                        mZhihuTop.setAdapter(mPagerAdapter);
+                        mZhihuTop_ViewPager.setAdapter(mPagerAdapter);
+                        mZhihuTop_Indicator.setViewPager(mZhihuTop_ViewPager);
+
+                        mZhihuTop_ViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                            @Override
+                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                            }
+
+                            @Override
+                            public void onPageSelected(int position) {
+                                mZhihuTop_Title.setText(mData.top_stories.get(position).title);
+                            }
+
+                            @Override
+                            public void onPageScrollStateChanged(int state) {
+
+                            }
+                        });
+                        mZhihuTop_Title.setText(mData.top_stories.get(0).title);
 
                         mZhihuGridview.addHeaderView(mZhihuTop);
 
