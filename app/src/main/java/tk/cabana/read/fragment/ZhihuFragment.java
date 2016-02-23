@@ -133,12 +133,13 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
 
                             @Override
                             public void onPageScrollStateChanged(int state) {
-
+                                mRootView.setEnabled(state == ViewPager.SCROLL_STATE_IDLE);
                             }
                         });
                         mZhihuTop_Title.setText(mData.top_stories.get(0).title);
 
                         mZhihuGridview.addHeaderView(mZhihuTop);
+
 
                         //给gridview设置数据
                         mGridAdapter = new ZhihuGridViewAdapter();
@@ -148,33 +149,34 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 Intent intent = new Intent(getActivity(), ZhihuDetailActivity.class);
-                                intent.putExtra("ArticleID",mData.stories.get(position).id);
+                                intent.putExtra("ArticleID", mData.stories.get(position).id);
                                 startActivity(intent);
                             }
                         });
 
                         //当数据加载完成后,给listview设置监听
                         //只有当listview在最顶端是才能通过下拉来刷新数据
-                        /*mZhihuGridview.setOnScrollListener(new AbsListView.OnScrollListener() {
+                        mZhihuGridview.setOnScrollListener(new AbsListView.OnScrollListener() {
+
                             @Override
                             public void onScrollStateChanged(AbsListView view, int scrollState) {
-
                             }
 
                             @Override
-                            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                                boolean result = false;
-                                if (firstVisibleItem == 0) {
-                                    final View topChildView = mZhihuGridview.getChildAt(firstVisibleItem);
-                                    result = topChildView.getTop() == 0;
+                            public void onScroll(AbsListView view, int firstVisibleItem,
+                                                 int visibleItemCount, int totalItemCount) {
+                                boolean enable = false;
+                                if (mZhihuGridview != null && mZhihuGridview.getChildCount() > 0) {
+                                    // check if the first item of the list is visible
+                                    boolean firstItemVisible = mZhihuGridview.getFirstVisiblePosition() == 0;
+                                    // check if the top of the first item is visible
+                                    boolean topOfFirstItemVisible = mZhihuGridview.getChildAt(0).getTop() == 0;
+                                    // enabling or disabling the refresh layout
+                                    enable = firstItemVisible && topOfFirstItemVisible;
                                 }
-                                if (result) {
-                                    mRootView.setEnabled(true);
-                                } else {
-                                    mRootView.setEnabled(false);
-                                }
+                                mRootView.setEnabled(enable);
                             }
-                        });*/
+                        });
 
                         refreshdata();
 
