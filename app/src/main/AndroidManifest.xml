@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.CnbetaDetailActivity"/>
+        <activity android:name=".activity.ZhihuDetailActivity"/>
     </application>
 
 </manifest>

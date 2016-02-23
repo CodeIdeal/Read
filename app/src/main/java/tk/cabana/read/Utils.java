@@ -49,7 +49,13 @@ public class Utils {
                     listener.response(response.body().string());
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "获取网络数据数失败", Toast.LENGTH_SHORT).show();
+                    runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "获取网络数据数失败", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                 }
             }
         });

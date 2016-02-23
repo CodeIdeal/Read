@@ -11,6 +11,7 @@
             android:id="@+id/Cnbeta_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
             android:background="#CBD0D3">
 
         </ListView>

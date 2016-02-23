@@ -1,20 +1,21 @@
 package tk.cabana.read.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -26,7 +27,10 @@ import com.squareup.picasso.Picasso;
 import tk.cabana.read.Constants;
 import tk.cabana.read.R;
 import tk.cabana.read.Utils;
+import tk.cabana.read.activity.CnbetaDetailActivity;
+import tk.cabana.read.activity.ZhihuDetailActivity;
 import tk.cabana.read.bean.ZhihuBean;
+import tk.cabana.read.custom.HeaderGridView;
 
 /**
  * Created by   KY on 2016/1/28.
@@ -47,7 +51,7 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
 
     private LinearLayout mZhihuView;
     private ViewPager mZhihuTop;
-    private GridView mZhihuGridview;
+    private HeaderGridView mZhihuGridview;
     private RelativeLayout mZhihuLoading;
 
     private boolean flag;
@@ -74,8 +78,9 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
         });
 
         mZhihuView = (LinearLayout) mRootView.findViewById(R.id.zhihu_view);
-        mZhihuTop = (ViewPager) mRootView.findViewById(R.id.zhihu_top);
-        mZhihuGridview = (GridView) mRootView.findViewById(R.id.zhihu_gridview);
+//        mZhihuTop = (ViewPager) mRootView.findViewById(R.id.zhihu_top);
+        mZhihuTop = new ViewPager(getContext());
+        mZhihuGridview = (HeaderGridView) mRootView.findViewById(R.id.zhihu_gridview);
         mZhihuLoading = (RelativeLayout) mRootView.findViewById(R.id.zhihu_loading);
 
         return mRootView;
@@ -90,18 +95,57 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
                 Gson gson = new Gson();
                 Log.d(TAG, "response: " + response);
                 mData = gson.fromJson(response, ZhihuBean.class);
+                Log.d(TAG, "response: 数据加载成功");
                 Utils.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
                         //绑定数据
 
+                        //给viewpager设置数据
+                        mPagerAdapter = new ZhihuViewPagerAdapter();
+                        ViewGroup.LayoutParams params = new ViewPager.LayoutParams();
+                        params.height = Utils.dp2px(getContext(),200);
+                        params.width = ViewPager.LayoutParams.MATCH_PARENT;
+                        mZhihuTop.setLayoutParams(params);
+                        mZhihuTop.setAdapter(mPagerAdapter);
+
+                        mZhihuGridview.addHeaderView(mZhihuTop);
+
                         //给gridview设置数据
                         mGridAdapter = new ZhihuGridViewAdapter();
                         mZhihuGridview.setAdapter(mGridAdapter);
 
-                        //给viewpager设置数据
-                        mPagerAdapter = new ZhihuViewPagerAdapter();
-                        mZhihuTop.setAdapter(mPagerAdapter);
+                        mZhihuGridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                Intent intent = new Intent(getActivity(), ZhihuDetailActivity.class);
+                                intent.putExtra("ArticleID",mData.stories.get(position).id);
+                                startActivity(intent);
+                            }
+                        });
+
+                        //当数据加载完成后,给listview设置监听
+                        //只有当listview在最顶端是才能通过下拉来刷新数据
+                        /*mZhihuGridview.setOnScrollListener(new AbsListView.OnScrollListener() {
+                            @Override
+                            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                            }
+
+                            @Override
+                            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                                boolean result = false;
+                                if (firstVisibleItem == 0) {
+                                    final View topChildView = mZhihuGridview.getChildAt(firstVisibleItem);
+                                    result = topChildView.getTop() == 0;
+                                }
+                                if (result) {
+                                    mRootView.setEnabled(true);
+                                } else {
+                                    mRootView.setEnabled(false);
+                                }
+                            }
+                        });*/
 
                         refreshdata();
 
@@ -112,11 +156,13 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
     }
 
     private void refreshdata() {
+        Log.d(TAG, "response: 刷新UI");
         mZhihuLoading.setVisibility(View.GONE);
     }
 
 
     private class ZhihuGridViewAdapter extends BaseAdapter {
+
         @Override
         public int getCount() {
             if (mData != null) {
@@ -144,8 +190,10 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
                 ImageView zhihuListviewImg;
                 TextView zhihuListviewTitle;
             }
+
             ViewHolder viewHolder = null;
-            if (convertView == null) {
+
+            if (convertView == null || convertView instanceof ViewPager) {
                 convertView = View.inflate(getContext(), R.layout.item_list_zhihu, null);
                 viewHolder = new ViewHolder();
                 viewHolder.zhihuListviewImg = (ImageView) convertView.findViewById(R.id.zhihu_listview_img);
@@ -156,11 +204,15 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
             }
 
             ZhihuBean.StoriesEntity storiesEntity = mData.stories.get(position);
-            Picasso.with(Utils.getContext()).load(storiesEntity.images.get(0)).into(viewHolder.zhihuListviewImg);
+            WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+            Display display = windowManager.getDefaultDisplay();
+            int width = display.getWidth();
+            Picasso.with(Utils.getContext()).load(storiesEntity.images.get(0)).resize(width/2,width/2).into(viewHolder.zhihuListviewImg);
             viewHolder.zhihuListviewTitle.setText(storiesEntity.title);
 
             return convertView;
         }
+
     }
 
     private class ZhihuViewPagerAdapter extends PagerAdapter {
@@ -174,7 +226,7 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
 
         @Override
         public boolean isViewFromObject(View view, Object object) {
-            return view ==(View)object;
+            return view == (View) object;
         }
 
         @Override
@@ -183,11 +235,10 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
             WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
             Display display = windowManager.getDefaultDisplay();
             int width = display.getWidth();
-            Picasso.with(getContext()).load(""+mData.top_stories.get(position).image).resize(width,Utils.dp2px(getContext(),200)).into(imageView);
+            Picasso.with(getContext()).load("" + mData.top_stories.get(position).image).resize(width, Utils.dp2px(getContext(), 200)).centerCrop().into(imageView);
             container.addView(imageView);
             return imageView;
         }
-
 
 
         @Override

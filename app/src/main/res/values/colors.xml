@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <!--自己用的颜色-->
+    <color name="listviewbackground">#e0e5ea</color> <!-- 浅蓝灰色 -->
+
     <!--开发中常用的颜色-->
     <color name="white">#ffffff</color> <!-- 白色 -->
     <color name="ivory">#fffff0</color> <!-- 象牙色 -->
