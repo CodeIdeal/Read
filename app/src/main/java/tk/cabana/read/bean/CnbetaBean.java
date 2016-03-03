@@ -42,4 +42,22 @@ public class CnbetaBean {
     public String source_link;
     public int hot;
     public int pushed;
+
+    @Override
+    public String toString() {
+        return "CnbetaBean{" +
+                "id=" + id +
+                ", article_id=" + article_id +
+                ", title='" + title + '\'' +
+                ", date='" + date + '\'' +
+                ", intro='" + intro + '\'' +
+                ", topic='" + topic + '\'' +
+                ", view_num=" + view_num +
+                ", comment_num=" + comment_num +
+                ", source='" + source + '\'' +
+                ", source_link='" + source_link + '\'' +
+                ", hot=" + hot +
+                ", pushed=" + pushed +
+                '}';
+    }
 }

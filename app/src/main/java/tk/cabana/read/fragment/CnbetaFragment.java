@@ -51,6 +51,7 @@ import tk.cabana.read.bean.CnbetaBean;
  */
 public class CnbetaFragment extends Fragment {
 
+    private static final String TAG = "CnbetaFragment";
     private ListView mCnbetaListview;
     private RelativeLayout mLoaing;
     private SwipeRefreshLayout mRootView;
@@ -99,12 +100,57 @@ public class CnbetaFragment extends Fragment {
                     @Override
                     public void run() {
                         //绑定数据
+                        Log.d(TAG, "run: 加载数据到listview");
                         mAdapter = new CnbetaAdapter();
                         mCnbetaListview.setAdapter(mAdapter);
+
+                        Log.d(TAG, "run: 显示内容切换");
+                        mLoaing.setVisibility(View.GONE);
+                        mCnbetaListview.setVisibility(View.VISIBLE);
+
+                        //设置listvew的item点击事件
+                        mCnbetaListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                Intent intent = new Intent(getActivity(), CnbetaDetailActivity.class);
+                                intent.putExtra("ArticleID", mDatas.get(position).article_id);
+                                startActivity(intent);
+                            }
+                        });
+
+                        //TODO:性能优化
+                        //当数据加载完成后,给listview设置监听
+                        //只有当listview在最顶端是才能通过下拉来刷新数据
+                        mCnbetaListview.setOnScrollListener(new AbsListView.OnScrollListener() {
+                            @Override
+                            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                            }
+
+                            @Override
+                            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                                boolean enable = false;
+                                if (mCnbetaListview != null && mCnbetaListview.getChildCount() > 0) {
+                                    // check if the first item of the list is visible
+                                    boolean firstItemVisible = mCnbetaListview.getFirstVisiblePosition() == 0;
+                                    // check if the top of the first item is visible
+                                    boolean topOfFirstItemVisible = mCnbetaListview.getChildAt(0).getTop() == 0;
+                                    // enabling or disabling the refresh layout
+                                    enable = firstItemVisible && topOfFirstItemVisible;
+                                }
+                                mRootView.setEnabled(enable);
+                            }
+                        });
+
                         refreshdata();
 
                     }
                 });
+            }
+
+            @Override
+            public void erro() {
+                mRootView.setRefreshing(false);
             }
         });
 
@@ -114,78 +160,35 @@ public class CnbetaFragment extends Fragment {
 
     public void refreshdata() {
 
-        Utils.newThreadtask(new Runnable() {
+        Utils.netRequest(Constants.GET_CNBETA_NEWS_URL, new Utils.netRequestListener() {
             @Override
-            public void run() {
-
-                flag = true;
-                OkHttpClient okHttpClient = new OkHttpClient();
-                Request request = new Request.Builder().url(Constants.GET_CNBETA_NEWS_URL).get().build();
-
-                Response response = null;
-                try {
-                    response = okHttpClient.newCall(request).execute();
-                    Gson gson = new Gson();
-                    mDatas = gson.fromJson(response.body().string(), new TypeToken<List<CnbetaBean>>() {
-                    }.getType());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+            public void response(String response) {
+                Gson gson = new Gson();
+                mDatas = gson.fromJson(response, new TypeToken<List<CnbetaBean>>() {
+                }.getType());
                 Utils.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
-
                         Log.d("kaka", "run: 刷新内容");
-                        mAdapter.notifyDataSetChanged();
+                        Log.d(TAG, "run: " + mDatas.toString());
+                        if (mDatas != null) {
+                            mAdapter.notifyDataSetChanged();
+                        }
                         mRootView.setRefreshing(false);
                         flag = false;
-
-                        if (mDatas == null) {
-                            mLoaing.setVisibility(View.VISIBLE);
-                            mCnbetaListview.setVisibility(View.GONE);
-                        } else {
-                            mLoaing.setVisibility(View.GONE);
-                            mCnbetaListview.setVisibility(View.VISIBLE);
-
-                            //设置listvew的item点击事件
-                            mCnbetaListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    Intent intent = new Intent(getActivity(), CnbetaDetailActivity.class);
-                                    intent.putExtra("ArticleID",mDatas.get(position).article_id);
-                                    startActivity(intent);
-                                }
-                            });
-
-                            //TODO:性能优化
-                            //当数据加载完成后,给listview设置监听
-                            //只有当listview在最顶端是才能通过下拉来刷新数据
-                            mCnbetaListview.setOnScrollListener(new AbsListView.OnScrollListener() {
-                                @Override
-                                public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                                }
-
-                                @Override
-                                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                                    boolean result = false;
-                                    if (firstVisibleItem == 0) {
-                                        final View topChildView = mCnbetaListview.getChildAt(firstVisibleItem);
-                                        result = topChildView.getTop() == 0;
-                                    }
-                                    if (result) {
-                                        mRootView.setEnabled(true);
-                                    } else {
-                                        mRootView.setEnabled(false);
-                                    }
-                                }
-                            });
-                        }
                     }
                 });
             }
+
+            @Override
+            public void erro() {
+                mLoaing.setVisibility(View.GONE);
+                mRootView.setRefreshing(false);
+            }
+
+
         });
+
     }
 
     private class CnbetaAdapter extends BaseAdapter {
@@ -234,7 +237,7 @@ public class CnbetaFragment extends Fragment {
 
             CnbetaBean cnbetaBean = mDatas.get(position);
 
-            Picasso.with(Utils.getContext()).load("http:" + cnbetaBean.topic).into(viewHolder.mCnbetaIv);
+            Picasso.with(Utils.getContext()).load(cnbetaBean.topic).into(viewHolder.mCnbetaIv);
             viewHolder.mCnbetaTitle.setText(cnbetaBean.title);
             viewHolder.mCnbetaIntro.setText(cnbetaBean.intro);
             viewHolder.mCnbetaScan.setText(cnbetaBean.view_num + "");

@@ -184,6 +184,11 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
                     }
                 });
             }
+
+            @Override
+            public void erro() {
+                mRootView.setRefreshing(false);
+            }
         });
     }
 
@@ -206,6 +211,11 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
                         mZhihuLoading.setVisibility(View.GONE);
                     }
                 });
+            }
+
+            @Override
+            public void erro() {
+                mRootView.setRefreshing(false);
             }
         });
 

@@ -52,6 +52,7 @@ public class Utils {
                     runOnUIThread(new Runnable() {
                         @Override
                         public void run() {
+                            listener.erro();
                             Toast.makeText(getContext(), "获取网络数据数失败", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -148,5 +149,6 @@ public class Utils {
 
     public interface netRequestListener{
         void response(String response);
+        void erro();
     }
 }

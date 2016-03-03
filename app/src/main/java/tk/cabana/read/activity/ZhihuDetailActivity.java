@@ -93,6 +93,11 @@ public class ZhihuDetailActivity extends AppCompatActivity {
                     }
                 });
             }
+
+            @Override
+            public void erro() {
+
+            }
         });
     }
 
