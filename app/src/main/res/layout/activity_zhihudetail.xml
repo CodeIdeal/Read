@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <tk.cabana.read.custom.ParallaxScrollView
+        android:id="@+id/zhihudetial_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <ImageView
+                    android:id="@+id/zhihudetial_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    tools:ignore="HardcodedText" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="@drawable/item_background"/>
+                <TextView
+                    android:id="@+id/zhihudetial_imgtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:textColor="#ffffff"
+                    android:layout_margin="16dp"
+                    android:textSize="24sp"/>
+            </FrameLayout>
+
+            <WebView
+                android:id="@+id/zhihudetial_webview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText">
+
+            </WebView>
+        </LinearLayout>
+    </tk.cabana.read.custom.ParallaxScrollView>
+
+    <RelativeLayout
+        android:id="@+id/zhihudetial_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+</FrameLayout>

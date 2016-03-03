@@ -55,6 +55,7 @@ public class CnbetaFragment extends Fragment {
     private RelativeLayout mLoaing;
     private SwipeRefreshLayout mRootView;
 
+
     private List<CnbetaBean> mDatas;
     private CnbetaAdapter mAdapter;
     private boolean flag = false;
@@ -87,35 +88,6 @@ public class CnbetaFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-
-        /*//获取数据并绑定数据
-        Utils.newThreadtask(new Runnable() {
-            @Override
-            public void run() {
-
-                OkHttpClient okHttpClient = new OkHttpClient();
-                Request request = new Request.Builder().url(Constants.GET_CNBETA_NEWS_URL).get().build();
-                try {
-                    Response response = okHttpClient.newCall(request).execute();
-                    Gson gson = new Gson();
-                    mDatas = gson.fromJson(response.body().string(), new TypeToken<List<CnbetaBean>>() {
-                    }.getType());
-                    Utils.runOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //绑定数据
-                            mAdapter = new CnbetaAdapter();
-                            mCnbetaListview.setAdapter(mAdapter);
-                            refreshdata();
-
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "获取网络数据数失败", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });*/
 
         Utils.netRequest(Constants.GET_CNBETA_NEWS_URL, new Utils.netRequestListener() {
             @Override

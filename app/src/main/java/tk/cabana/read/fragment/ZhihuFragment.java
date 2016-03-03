@@ -58,6 +58,7 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
     private CircleIndicator mZhihuTop_Indicator;
     private TextView mZhihuTop_Title;
 
+
     private boolean flag;
     private ZhihuBean mData;
     private ZhihuGridViewAdapter mGridAdapter;
@@ -84,13 +85,13 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
         mZhihuView = (LinearLayout) mRootView.findViewById(R.id.zhihu_view);
 //        mZhihuTop = (ViewPager) mRootView.findViewById(R.id.zhihu_top);
         mZhihuGridview = (HeaderGridView) mRootView.findViewById(R.id.zhihu_gridview);
-        
+
         mZhihuTop = (RelativeLayout) View.inflate(getContext(), R.layout.indicatorviewpager, null);
         mZhihuTop_ViewPager = (ViewPager) mZhihuTop.findViewById(R.id.zhihutop_viewpager);
         mZhihuTop_Indicator = (CircleIndicator) mZhihuTop.findViewById(R.id.zhihutop_Indicator);
         mZhihuTop_Title = (TextView) mZhihuTop.findViewById(R.id.zhihutop_title);
 
-        
+
         mZhihuLoading = (RelativeLayout) mRootView.findViewById(R.id.zhihu_loading);
 
         return mRootView;
@@ -114,7 +115,7 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
                         //给viewpager设置数据
                         mPagerAdapter = new ZhihuViewPagerAdapter();
                         ViewGroup.LayoutParams params = new ViewPager.LayoutParams();
-                        params.height = Utils.dp2px(getContext(),200);
+                        params.height = Utils.dp2px(getContext(), 200);
                         params.width = ViewPager.LayoutParams.MATCH_PARENT;
                         mZhihuTop.setLayoutParams(params);
                         mZhihuTop_ViewPager.setAdapter(mPagerAdapter);
@@ -149,7 +150,7 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 Intent intent = new Intent(getActivity(), ZhihuDetailActivity.class);
-                                intent.putExtra("ArticleID", mData.stories.get(position).id);
+                                intent.putExtra("ArticleID", mData.stories.get(position - 1).id);
                                 startActivity(intent);
                             }
                         });
@@ -188,7 +189,26 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
 
     private void refreshdata() {
         Log.d(TAG, "response: 刷新UI");
-        mZhihuLoading.setVisibility(View.GONE);
+        flag =true;
+        Utils.netRequest(Constants.GET_ZHIHU_NEWS_URL, new Utils.netRequestListener() {
+            @Override
+            public void response(String response) {
+                Gson gson = new Gson();
+                Log.d(TAG, "response: " + response);
+                mData = gson.fromJson(response, ZhihuBean.class);
+                Log.d(TAG, "response: 数据加载成功");
+                Utils.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mGridAdapter.notifyDataSetChanged();
+                        mRootView.setRefreshing(false);
+                        flag =false;
+                        mZhihuLoading.setVisibility(View.GONE);
+                    }
+                });
+            }
+        });
+
     }
 
 
@@ -238,7 +258,7 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
             WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
             Display display = windowManager.getDefaultDisplay();
             int width = display.getWidth();
-            Picasso.with(Utils.getContext()).load(storiesEntity.images.get(0)).resize(width/2,width/2).into(viewHolder.zhihuListviewImg);
+            Picasso.with(Utils.getContext()).load(storiesEntity.images.get(0)).resize(width / 2, width / 2).into(viewHolder.zhihuListviewImg);
             viewHolder.zhihuListviewTitle.setText(storiesEntity.title);
 
             return convertView;
