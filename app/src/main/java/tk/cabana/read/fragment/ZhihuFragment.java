@@ -141,7 +141,6 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
 
                         mZhihuGridview.addHeaderView(mZhihuTop);
 
-
                         //给gridview设置数据
                         mGridAdapter = new ZhihuGridViewAdapter();
                         mZhihuGridview.setAdapter(mGridAdapter);
@@ -291,13 +290,25 @@ public class ZhihuFragment extends android.support.v4.app.Fragment {
         }
 
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(ViewGroup container, final int position) {
             ImageView imageView = new ImageView(getContext());
             WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
             Display display = windowManager.getDefaultDisplay();
             int width = display.getWidth();
             Picasso.with(getContext()).load("" + mData.top_stories.get(position).image).resize(width, Utils.dp2px(getContext(), 200)).centerCrop().into(imageView);
             container.addView(imageView);
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int index = position;
+                    Intent intent = new Intent(getActivity(), ZhihuDetailActivity.class);
+                    intent.putExtra("ArticleID", mData.top_stories.get(index).id);
+                    startActivity(intent);
+                }
+            });
+
+
             return imageView;
         }
 
