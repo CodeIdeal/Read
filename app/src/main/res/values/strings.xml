@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Read</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_feedback">FeedBack</string>
 </resources>

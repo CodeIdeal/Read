@@ -1,6 +1,8 @@
 package tk.cabana.read;
 
-import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -11,8 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +23,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.getWindow().setStatusBarColor(getColor(R.color.colorPrimaryDark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -72,8 +74,24 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_feedback) {
+            //获取客户端环境
+            int sdk= Build.VERSION.SDK_INT; // SDK号
+            String model=android.os.Build.MODEL; // 手机型号
+            String release=android.os.Build.VERSION.RELEASE; // android系统版本号
+
+
+            Intent data=new Intent(Intent.ACTION_SENDTO);
+            data.setData(Uri.parse("mailto:kanniu@163.com"));
+            data.putExtra(Intent.EXTRA_SUBJECT, "额...我遇到了一些问题");
+            data.putExtra(Intent.EXTRA_TEXT,
+                    "『App运行环境』：\n\n"+
+                    "       SDK Version:        "+sdk+"\n"+
+                    "       model:              "+model+"\n"+
+                    "       Android Release:    "+release+"\n\n"+
+                    "『bug描述』：\n\n"+
+                    "        ");
+            startActivity(data);
         }
 
         return super.onOptionsItemSelected(item);
