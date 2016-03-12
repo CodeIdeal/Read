@@ -2,6 +2,8 @@ package tk.cabana.read.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,9 +14,13 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.melnykov.fab.FloatingActionButton;
 import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
 
 import tk.cabana.read.Constants;
 import tk.cabana.read.R;
@@ -37,16 +43,29 @@ public class ZhihuDetailActivity extends AppCompatActivity {
     private WebView mZhihudetialWebview;
     private RelativeLayout mZhihudetialLoading;
     private TextView mZhihudetialImgtitle;
+    private Bitmap mBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zhihudetail);
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         articleID = intent.getIntExtra("ArticleID", -1);
 
         initView();
         initData();
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.attachToScrollView(mZhihudetialContent);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent it = new Intent(Intent.ACTION_SEND);
+                it.putExtra(Intent.EXTRA_TEXT, "分享你一篇文章:\n"+"    "+mDatas.title+"\n"+mDatas.share_url);
+                it.setType("text/*");
+                startActivity(Intent.createChooser(it, "选择你要分享的应用："));
+            }
+        });
     }
 
     private void initView() {
@@ -75,7 +94,9 @@ public class ZhihuDetailActivity extends AppCompatActivity {
                         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
                         Display display = windowManager.getDefaultDisplay();
                         int width = display.getWidth();
-                        Picasso.with(ZhihuDetailActivity.this).load(mDatas.image).resize(width,Utils.dp2px(ZhihuDetailActivity.this,200)).centerCrop().into(mZhihudetialImg);
+                        Picasso.with(ZhihuDetailActivity.this).load(mDatas.image).resize(width, Utils.dp2px(ZhihuDetailActivity.this, 200)).centerCrop().into(mZhihudetialImg);
+
+                        mZhihudetialImg.getDrawingCache(true);
 
                         //直接使用正则替换也可以实现
                         String HtmlContent = "<head>  </head>"+mDatas.body;

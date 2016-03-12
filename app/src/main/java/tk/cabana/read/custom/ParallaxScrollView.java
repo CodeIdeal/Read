@@ -12,10 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 
+import com.melnykov.fab.ObservableScrollView;
+
 import tk.cabana.read.R;
 
 
-public class ParallaxScrollView extends ScrollView {
+public class ParallaxScrollView extends ObservableScrollView {
 
     private static final int DEFAULT_PARALLAX_VIEWS = 1;
     private static final float DEFAULT_INNER_PARALLAX_FACTOR = 1.9F;

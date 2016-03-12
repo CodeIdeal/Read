@@ -6,6 +6,7 @@
 
     <!--自己用的颜色-->
     <color name="listviewbackground">#e0e5ea</color> <!-- 浅蓝灰色 -->
+    <color name="colorAccentDark">#b32152</color>
 
     <!--开发中常用的颜色-->
     <color name="white">#ffffff</color> <!-- 白色 -->

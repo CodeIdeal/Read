@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            String[] tabtitle = new String[]{"Cnbate","知乎","News"};
+            String[] tabtitle = new String[]{"Cnbeta","知乎","News"};
             return tabtitle[position];
         }
     }
