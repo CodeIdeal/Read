@@ -10,14 +10,15 @@ import android.webkit.WebView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import tk.cabana.read.Constants;
 import tk.cabana.read.R;
 import tk.cabana.read.Utils;
@@ -67,7 +68,7 @@ public class CnbetaDetailActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        Utils.newThreadtask(new Runnable() {
+        /*Utils.newThreadtask(new Runnable() {
             @Override
             public void run() {
 
@@ -86,6 +87,52 @@ public class CnbetaDetailActivity extends AppCompatActivity {
                 }
 
 
+                Utils.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Log.d("kaka", "run: 刷新内容");
+
+                        mCnbetadetailScrollview.setVisibility(View.VISIBLE);
+                        mCnbetadetailLoading.setVisibility(View.GONE);
+
+                        mCnbetadetailTitle.setText(mDatas.title);
+                        mCnbetadetailDate.setText(mDatas.date);
+                        mCnbetadetailIntro.setText(mDatas.intro);
+
+                        //通过方法将unicode的html代码转为utf-8格式
+                        String html = Utils.decodeUnicode(mDatas.content);
+                        Log.d("kaka", html);
+
+                        //通过jsoup解析，在html代码中的img标签下插入图片自适应的js代码
+                        *//*Document doc_Dis = Jsoup.parse(html);
+                        Elements ele_Img = doc_Dis.getElementsByTag("img");
+                        if (ele_Img.size() != 0){
+                            for (Element e_Img : ele_Img) {
+                                e_Img.attr("style", "width:100%");//核心代码，给img标签增加一个宽度的自适应js属性
+                            }
+                        }
+
+                        String newHtmlContent=doc_Dis.toString();
+                        Log.d("kaka", newHtmlContent);*//*
+
+                        //直接使用正则替换也可以实现
+                        String newHtmlContent = html.replaceAll("<img","<img style=\"width:100%\"");
+                        Log.d("kaka", newHtmlContent);
+
+                        //利用webview加载string类型的新的html
+                        mCnbetadetailContent.loadData(newHtmlContent, "text/html; charset=UTF-8", null);
+                    }
+                });
+            }
+        });*/
+
+        Utils.netRequest(Constants.GET_CNBETA_CONTENT_URL + articleID, new Utils.netRequestListener() {
+            @Override
+            public void response(String response) {
+                Log.d("kaka", response);
+                Gson gson = new Gson();
+                mDatas = gson.fromJson(response, CnbetaDetailBean.class);
                 Utils.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
@@ -123,6 +170,11 @@ public class CnbetaDetailActivity extends AppCompatActivity {
                         mCnbetadetailContent.loadData(newHtmlContent, "text/html; charset=UTF-8", null);
                     }
                 });
+            }
+
+            @Override
+            public void erro() {
+                Toast.makeText(CnbetaDetailActivity.this, "网络访问失败", Toast.LENGTH_SHORT).show();
             }
         });
     }

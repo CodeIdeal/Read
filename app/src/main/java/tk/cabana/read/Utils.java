@@ -5,16 +5,19 @@ import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.security.cert.CertificateFactory;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import tk.cabana.read.bean.CnbetaBean;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
 
 /**
  * Created by   KY on 2016/1/28.
@@ -43,6 +46,13 @@ public class Utils {
             public void run() {
 
                 OkHttpClient okHttpClient = new OkHttpClient();
+                InputStream certificate = null;
+                try {
+                    certificate = getContext().getAssets().open("cnbeta.cer");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                setCertificates(okHttpClient,certificate);
                 Request request = new Request.Builder().url(url).get().build();
                 try {
                     Response response = okHttpClient.newCall(request).execute();
@@ -150,5 +160,50 @@ public class Utils {
     public interface netRequestListener{
         void response(String response);
         void erro();
+    }
+
+    //给okhttp设置特定信任证书
+    public static void setCertificates(OkHttpClient mOkHttpClient,InputStream... certificates)
+    {
+        try
+        {
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null);
+            int index = 0;
+            for (InputStream certificate : certificates)
+            {
+                String certificateAlias = Integer.toString(index++);
+                keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));
+
+                try
+                {
+                    if (certificate != null)
+                        certificate.close();
+                } catch (IOException e)
+                {
+                }
+            }
+
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+
+            TrustManagerFactory trustManagerFactory =
+                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+
+            trustManagerFactory.init(keyStore);
+            sslContext.init
+                    (
+                            null,
+                            trustManagerFactory.getTrustManagers(),
+                            new SecureRandom()
+                    );
+            mOkHttpClient.setSslSocketFactory(sslContext.getSocketFactory());
+
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 }
