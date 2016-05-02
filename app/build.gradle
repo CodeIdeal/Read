@@ -8,12 +8,12 @@ android {
         applicationId "tk.cabana.read"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 4
+        versionCode 5
         versionName "1.2"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

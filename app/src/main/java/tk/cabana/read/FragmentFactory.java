@@ -13,12 +13,6 @@ import tk.cabana.read.fragment.ZhihuFragment;
  * 类名:	      FragmentFactory
  * 创建者:	   康阳
  * 创建时间:   2016/1/28	17:58
- * 描述:	TODO
- * <p/>
- * svn版本:   $$Rev$
- * 更新人:     $$Author$
- * 更新时间:    $$Date$
- * 更新描述:    TODO
  */
 public class FragmentFactory {
 
@@ -26,10 +20,7 @@ public class FragmentFactory {
         Fragment fragment = null;
         switch (position){
             case 0:
-//                Bundle bundle = new Bundle();
-//                bundle.putParcelable("context",context);
                 fragment = new CnbetaFragment();
-//                fragment.setArguments(bundle);
                 break;
             case 1:
                 fragment = new ZhihuFragment();

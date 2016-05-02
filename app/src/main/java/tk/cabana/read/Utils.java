@@ -26,12 +26,6 @@ import javax.net.ssl.TrustManagerFactory;
  * 类名:	      Utils
  * 创建者:	   康阳
  * 创建时间:   2016/1/28	18:05
- * 描述:	TODO
- * <p/>
- * svn版本:   $$Rev$
- * 更新人:     $$Author$
- * 更新时间:    $$Date$
- * 更新描述:    TODO
  */
 public class Utils {
 
@@ -91,19 +85,19 @@ public class Utils {
         return px;
     }
 
-    public static String decodeUnicode(String theString) {
+    public static String decodeUnicode(String unicodeString) {
         char aChar;
-        int len = theString.length();
+        int len = unicodeString.length();
         StringBuffer outBuffer = new StringBuffer(len);
         for (int x = 0; x < len;) {
-            aChar = theString.charAt(x++);
+            aChar = unicodeString.charAt(x++);
             if (aChar == '\\') {
-                aChar = theString.charAt(x++);
+                aChar = unicodeString.charAt(x++);
                 if (aChar == 'u') {
                     // Read the xxxx
                     int value = 0;
                     for (int i = 0; i < 4; i++) {
-                        aChar = theString.charAt(x++);
+                        aChar = unicodeString.charAt(x++);
                         switch (aChar) {
                             case '0':
                             case '1':

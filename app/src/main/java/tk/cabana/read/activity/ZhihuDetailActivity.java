@@ -26,12 +26,13 @@ import tk.cabana.read.Constants;
 import tk.cabana.read.R;
 import tk.cabana.read.Utils;
 import tk.cabana.read.bean.ZhihuDetailBean;
+import tk.cabana.read.custom.MyActivity;
 import tk.cabana.read.custom.ParallaxScrollView;
 
 /**
  * Created by k on 2016/2/18.
  */
-public class ZhihuDetailActivity extends AppCompatActivity {
+public class ZhihuDetailActivity extends MyActivity {
 
     private int articleID;
     private String responseString;
@@ -46,16 +47,27 @@ public class ZhihuDetailActivity extends AppCompatActivity {
     private Bitmap mBitmap;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void setMyContentView() {
         setContentView(R.layout.activity_zhihudetail);
         final Intent intent = getIntent();
         articleID = intent.getIntExtra("ArticleID", -1);
+    }
 
+    @Override
+    public void init() {
         initView();
         initData();
+    }
+
+    private void initView() {
+        mZhihudetialContent = (ParallaxScrollView) findViewById(R.id.zhihudetial_content);
+        mZhihudetialImg = (ImageView) findViewById(R.id.zhihudetial_img);
+        mZhihudetialWebview = (WebView) findViewById(R.id.zhihudetial_webview);
+        mZhihudetialLoading = (RelativeLayout) findViewById(R.id.zhihudetial_loading);
+        mZhihudetialImgtitle = (TextView) findViewById(R.id.zhihudetial_imgtitle);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        Log.d("kaka", "setMyContentView: "+fab.toString());
         fab.attachToScrollView(mZhihudetialContent);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,14 +78,6 @@ public class ZhihuDetailActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(it, "选择你要分享的应用："));
             }
         });
-    }
-
-    private void initView() {
-        mZhihudetialContent = (ParallaxScrollView) findViewById(R.id.zhihudetial_content);
-        mZhihudetialImg = (ImageView) findViewById(R.id.zhihudetial_img);
-        mZhihudetialWebview = (WebView) findViewById(R.id.zhihudetial_webview);
-        mZhihudetialLoading = (RelativeLayout) findViewById(R.id.zhihudetial_loading);
-        mZhihudetialImgtitle = (TextView) findViewById(R.id.zhihudetial_imgtitle);
     }
 
     private void initData() {

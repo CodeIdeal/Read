@@ -11,12 +11,6 @@ import android.os.Handler;
  * 类名:	      MyApplication
  * 创建者:	   康阳
  * 创建时间:   2016/1/28	18:05
- * 描述:	TODO
- * <p/>
- * svn版本:   $$Rev$
- * 更新人:     $$Author$
- * 更新时间:    $$Date$
- * 更新描述:    TODO
  */
 public class MyApplication extends Application{
     static Handler mHandler = new Handler();

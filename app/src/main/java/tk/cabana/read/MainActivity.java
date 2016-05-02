@@ -1,6 +1,7 @@
 package tk.cabana.read;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,28 +12,32 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import java.lang.reflect.Field;
+
+import tk.cabana.read.custom.MyActivity;
+
+public class MainActivity extends MyActivity {
 
     private TabLayout mTab;
     private ViewPager mViewpager;
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void setMyContentView() {
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        init();
     }
 
-    private void init() {
+    public void init() {
         initView();
         initData();
         initEvent();
@@ -76,21 +81,21 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_feedback) {
             //获取客户端环境
-            int sdk= Build.VERSION.SDK_INT; // SDK号
-            String model=android.os.Build.MODEL; // 手机型号
-            String release=android.os.Build.VERSION.RELEASE; // android系统版本号
+            int sdk = Build.VERSION.SDK_INT; // SDK号
+            String model = android.os.Build.MODEL; // 手机型号
+            String release = android.os.Build.VERSION.RELEASE; // android系统版本号
 
 
-            Intent data=new Intent(Intent.ACTION_SENDTO);
+            Intent data = new Intent(Intent.ACTION_SENDTO);
             data.setData(Uri.parse("mailto:kanniu@163.com"));
             data.putExtra(Intent.EXTRA_SUBJECT, "额...我遇到了一些问题");
             data.putExtra(Intent.EXTRA_TEXT,
-                    "『App运行环境』：\n\n"+
-                    "       SDK Version:        "+sdk+"\n"+
-                    "       model:              "+model+"\n"+
-                    "       Android Release:    "+release+"\n\n"+
-                    "『bug描述』：\n\n"+
-                    "        ");
+                    "『App运行环境』：\n\n" +
+                            "       SDK Version:        " + sdk + "\n" +
+                            "       model:              " + model + "\n" +
+                            "       Android Release:    " + release + "\n\n" +
+                            "『bug描述』：\n\n" +
+                            "        ");
             startActivity(data);
         }
 
@@ -117,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            String[] tabtitle = new String[]{"Cnbeta","知乎","News"};
+            String[] tabtitle = new String[]{"Cnbeta", "知乎", "News"};
             return tabtitle[position];
         }
     }

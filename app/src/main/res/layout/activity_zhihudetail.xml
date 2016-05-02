@@ -60,6 +60,7 @@
         fab:fab_colorNormal="@color/gainsboro"
         fab:fab_colorPressed="@color/lightgray"
         fab:fab_colorRipple="@color/mediumslateblue" />
+
     <RelativeLayout
         android:id="@+id/zhihudetial_loading"
         android:layout_width="match_parent"
